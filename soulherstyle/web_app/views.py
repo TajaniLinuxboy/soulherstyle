@@ -5,17 +5,23 @@ from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 
 from web_app import forms, models
+from web_app.methods import verifyJWT
 
 from soulherstyle.settings import SECRET_KEY
 
 
 # Create your views here.
+@verifyJWT('web_app-account', 'token:user')
 def register(request): 
-    if request.COOKIES.get('token'): 
-        return redirect('web_app-account')
     form = forms.RegisterForm()
-    return render(request, 'web_app/register.html', context={'form': form})
 
+    response = render(request, 'web_app/register.html', context={'form': form})
+    jwt_token = jwt.encode(payload={'loggedIn: false'}, key=SECRET_KEY, algorithm='HS256') 
+    response.set_cookie('token:anonymous', jwt_token, max_age=60, httponly=True)
+
+    return response
+
+@verifyJWT('web_app-register', 'token:anonymous')
 def register_validation(request): 
     if request.method == "POST": 
         form = forms.RegisterForm(request.POST)
@@ -26,7 +32,7 @@ def register_validation(request):
     error = "This email already exists"
     return HttpResponse(error)
 
-
+@verifyJWT('web_app-account', 'token:user')
 def login(request): 
     form = forms.LoginForm()
 
@@ -35,6 +41,7 @@ def login(request):
 
     return render(request, 'web_app/login.html', context={'form': form}) 
 
+@verifyJWT('web_app-account', 'token:user')
 def login_validation(request):
     if request.method == "POST": 
         form = forms.LoginForm(request.POST)
@@ -52,15 +59,16 @@ def login_validation(request):
             except models.User.DoesNotExist as err:
                 return HttpResponse(err)
 
-
+@verifyJWT('web_app-register', 'token:anonymous')
 def account(request): 
+       
        response = render(request, 'web_app/account.html')
        jwt_token = jwt.encode(payload={'in': True, 'user': 'some email'}, key=SECRET_KEY, algorithm='HS256') 
        response.set_cookie('token', jwt_token, max_age=60, httponly=True)
        
        return response
 
-
+@verifyJWT('web_app-register', 'token:anonymous')
 def logout(request): 
     form = forms.RegisterForm()
 
