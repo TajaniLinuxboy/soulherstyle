@@ -3,6 +3,7 @@
 {% block body %}
     <div>
         Account Page
+        {{ request.user }}
         <a href="{% url 'web_app-logout' %}">Logout</a>
     </div>
 {% endblock %}
