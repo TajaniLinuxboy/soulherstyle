@@ -1,0 +1,9 @@
+bin/
+include/
+lib/
+lib64
+pyvenv.cfg/
+*.pyc
+__pycache__
+*.egg-info
+pyvenv.cfg

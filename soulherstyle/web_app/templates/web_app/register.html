@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block body %}
+    <div>
+        <form hx-post="{% url 'web_app-register-validation' %}" hx-swap="innerHTML" hx-target=".errors" id="register-form">
+            {% csrf_token %}
+            <div>
+                <div id="inputs">
+                <div class="errors">
+                </div>
+                {{ form.email.label }}
+                {{ form.email }}
+            
+                {{ form.password.label }}
+                {{ form.password }}
+                
+                </div>
+                <button hx-get="{% url 'web_app-login' %}" hx-swap="outerHTML" hx-target="#register-form">Need to Login</button>
+                <button type="submit">Submit</button>   
+            </div>
+        </form>
+    </div>
+{% endblock %}
