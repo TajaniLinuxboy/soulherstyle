@@ -10,5 +10,6 @@
             {{ form.password }}
         </div>
         <button type="submit">Submit</button>
+        <a hx-get="{% url 'web_app-register' %}" preload="mouseover" hx-push-url="true" hx-swap="outerHTML" hx-target="#login-form">Sign Up</a>
     </div>
 </form>

@@ -21,7 +21,7 @@ def register(request):
 
     return response
 
-@verifyJWT('web_app-register', 'token:anonymous')
+@verifyJWT('web_app-account', 'token:user')
 def register_validation(request): 
     if request.method == "POST": 
         form = forms.RegisterForm(request.POST)
@@ -61,11 +61,10 @@ def login_validation(request):
             except models.User.DoesNotExist as err:
                 return HttpResponseNotFound("User Doesn't Exist ")
 
+
 @verifyJWT('web_app-register', 'token:anonymous')
 def account(request): 
        response = render(request, 'web_app/account.html')
-       response['HX-Reswap'] = "outerHTML"
-
        return response
 
 
@@ -73,8 +72,7 @@ def account(request):
 def logout(request): 
     form = forms.RegisterForm()
 
-    if request.method == "GET": 
-        response = render(request, 'web_app/register.html', context={'form': form})
+    if request.method == "GET":
+        response = redirect('web_app-register')
         response.delete_cookie('token:user')
-
         return response

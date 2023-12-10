@@ -21,3 +21,12 @@ def replace_token(response:HttpResponse, payload:dict, key:str, algro:str):
     response.set_cookie('token:user', new_token, httponly=True, max_age=60)
 
     return response
+
+
+#def logout(response:HttpResponse, key:str, algro:str): 
+#    response.delete_cookie('token:user')
+#
+#    anonymous_token = jwt.encode(payload={'loggedIn':'False'}, key=key, algorithm=algro)
+#    response.set_cookie('token:anonymous', anonymous_token)
+#
+#    return response
