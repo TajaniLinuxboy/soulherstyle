@@ -1,6 +1,9 @@
-from django.shortcuts import redirect
+import jwt 
 
-def verifyJWT(redirect_to, token=None): 
+from django.shortcuts import redirect
+from django.http import HttpResponse
+
+def verifyJWT(redirect_to:str, token=None): 
     def wrapfunc(func): 
         def innerwrap(request, *args, **kwargs): 
             if request.COOKIES.get(token): 
@@ -9,3 +12,12 @@ def verifyJWT(redirect_to, token=None):
             return func(request, *args, **kwargs)
         return innerwrap
     return wrapfunc
+
+
+def replace_token(response:HttpResponse, payload:dict, key:str, algro:str): 
+    response.delete_cookie('token:anonymous')
+
+    new_token = jwt.encode(payload=payload, key=key, algorithm=algro)
+    response.set_cookie('token:user', new_token, httponly=True, max_age=60)
+
+    return response

@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.contrib.auth.hashers import make_password, check_password
 
 from web_app import forms, models
-from web_app.methods import verifyJWT
+from web_app.methods import verifyJWT, replace_token
 
 from soulherstyle.settings import SECRET_KEY
 
@@ -16,7 +16,7 @@ def register(request):
     form = forms.RegisterForm()
 
     response = render(request, 'web_app/register.html', context={'form': form})
-    jwt_token = jwt.encode(payload={'loggedIn: false'}, key=SECRET_KEY, algorithm='HS256') 
+    jwt_token = jwt.encode(payload={'loggedIn': 'false'}, key=SECRET_KEY, algorithm='HS256') 
     response.set_cookie('token:anonymous', jwt_token, max_age=60, httponly=True)
 
     return response
@@ -53,20 +53,17 @@ def login_validation(request):
             try: 
                 get_user = models.User.objects.get(email=email)
                 if password == get_user.password: #if check_password(password, get_user.password)
-                    return redirect('web_app-account')
-                else: 
+                    response = redirect('web_app-account')
+                    return replace_token(response, {'user': get_user.email}, key=SECRET_KEY, algro='HS256')
+                else:
                     return HttpResponse('Invalid Email or Password') 
             except models.User.DoesNotExist as err:
                 return HttpResponse(err)
 
 @verifyJWT('web_app-register', 'token:anonymous')
 def account(request): 
-       
-       response = render(request, 'web_app/account.html')
-       jwt_token = jwt.encode(payload={'in': True, 'user': 'some email'}, key=SECRET_KEY, algorithm='HS256') 
-       response.set_cookie('token', jwt_token, max_age=60, httponly=True)
-       
-       return response
+       return render(request, 'web_app/account.html')
+
 
 @verifyJWT('web_app-register', 'token:anonymous')
 def logout(request): 
@@ -74,6 +71,6 @@ def logout(request):
 
     if request.method == "GET": 
         response = render(request, 'web_app/register.html', context={'form': form})
-        response.delete_cookie('token')
+        response.delete_cookie('token:user')
 
         return response
