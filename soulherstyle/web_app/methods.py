@@ -6,12 +6,22 @@ from django.http import HttpResponse
 from soulherstyle.settings import SECRET_KEY
 from web_app.models import User
 
-
 def set_access_token(response:HttpResponse, payload:dict, key:str, algro:str) -> HttpResponse:
     access_token = jwt.encode(payload=payload, key=key, algorithm=algro)
     response.set_cookie('access_token', access_token, max_age=1000, httponly=True)
 
     return response
+
+
+def already_authenticated(whereto:str): 
+    def inner_func(func):
+        def inner_wrap(request, *args, **kwargs):
+            if request.user.is_authenticated:
+                return redirect(whereto)
+            
+            return func(request, *args, **kwargs)
+        return inner_wrap
+    return inner_func
 
 
 class VerifyJwtTokenMiddleware:
@@ -42,3 +52,6 @@ class JwtSetUserMiddleware:
             request.user = current_user
 
         return self.get_response(request)
+
+
+

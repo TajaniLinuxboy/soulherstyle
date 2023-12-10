@@ -7,17 +7,18 @@ from django.contrib.auth.decorators import login_required
 
 
 from web_app import forms, models
-from web_app.methods import set_access_token
+from web_app.methods import set_access_token, already_authenticated
 
 from soulherstyle.settings import SECRET_KEY
 
 
 # Create your views here.
+@already_authenticated('web_app-account')
 def register(request): 
     form = forms.RegisterForm()
     return render(request, 'web_app/register.html', context={'form': form})
 
-
+@already_authenticated('web_app-account')
 def register_validation(request): 
     if request.method == "POST": 
         form = forms.RegisterForm(request.POST)
@@ -28,12 +29,12 @@ def register_validation(request):
     error = "This email already exists"
     return HttpResponse(error)
 
-
+@already_authenticated('web_app-account')
 def login(request): 
     form = forms.LoginForm()
     return render(request, 'web_app/login.html', context={'form': form}) 
 
-
+@already_authenticated('web_app-account')
 def login_validation(request):
     if request.method == "POST": 
         form = forms.LoginForm(request.POST)
@@ -66,5 +67,5 @@ def logout(request):
     
     if request.method == "GET":
         response = redirect('web_app-register')
-        response.delete_cookie('token:user')
+        response.delete_cookie('access_token')
         return response
