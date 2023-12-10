@@ -15,7 +15,7 @@
                 {{ form.password }}
                 
                 </div>
-                <button hx-get="{% url 'web_app-login' %}" hx-swap="outerHTML" hx-target="#register-form">Need to Login</button>
+                <a hx-push-url="true" hx-get="{% url 'web_app-login' %}" hx-swap="outerHTML" hx-target="#register-form" preload="mouseover">Need to Login</a>
                 <button type="submit">Submit</button>   
             </div>
         </form>

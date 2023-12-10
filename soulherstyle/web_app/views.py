@@ -1,7 +1,7 @@
 import jwt
 
 from django.shortcuts import render, redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.contrib.auth.hashers import make_password, check_password
 
 from web_app import forms, models
@@ -55,14 +55,18 @@ def login_validation(request):
                 if password == get_user.password: #if check_password(password, get_user.password)
                     response = redirect('web_app-account')
                     return replace_token(response, {'user': get_user.email}, key=SECRET_KEY, algro='HS256')
+                
                 else:
-                    return HttpResponse('Invalid Email or Password') 
+                    return HttpResponseNotFound("Invalid Password")
             except models.User.DoesNotExist as err:
-                return HttpResponse(err)
+                return HttpResponseNotFound("User Doesn't Exist ")
 
 @verifyJWT('web_app-register', 'token:anonymous')
 def account(request): 
-       return render(request, 'web_app/account.html')
+       response = render(request, 'web_app/account.html')
+       response['HX-Reswap'] = "outerHTML"
+
+       return response
 
 
 @verifyJWT('web_app-register', 'token:anonymous')

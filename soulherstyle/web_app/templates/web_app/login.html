@@ -1,4 +1,4 @@
-<form hx-post="{% url 'web_app-login-validation' %}" hx-swap="innerHTML" hx-target=".errors" id="login-form">
+<form hx-ext="response-targets" hx-post="{% url 'web_app-login-validation' %}" hx-target-404=".errors" hx-target-500=".errors" hx-target-200="#login-form" id="login-form">
     {% csrf_token %}
     <div>
         <div id="inputs">
