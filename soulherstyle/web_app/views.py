@@ -13,12 +13,12 @@ from soulherstyle.settings import SECRET_KEY
 
 
 # Create your views here.
-@already_authenticated('web_app-account')
+@already_authenticated()
 def register(request): 
     form = forms.RegisterForm()
     return render(request, 'web_app/register.html', context={'form': form})
 
-@already_authenticated('web_app-account')
+@already_authenticated()
 def register_validation(request): 
     if request.method == "POST": 
         form = forms.RegisterForm(request.POST)
@@ -29,12 +29,12 @@ def register_validation(request):
     error = "This email already exists"
     return HttpResponse(error)
 
-@already_authenticated('web_app-account')
+@already_authenticated()
 def login(request): 
     form = forms.LoginForm()
     return render(request, 'web_app/login.html', context={'form': form}) 
 
-@already_authenticated('web_app-account')
+@already_authenticated()
 def login_validation(request):
     if request.method == "POST": 
         form = forms.LoginForm(request.POST)

@@ -1,9 +1,10 @@
+from typing import Any
 import jwt 
 
 from django.shortcuts import redirect
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpRequest
 
-from soulherstyle.settings import SECRET_KEY
+from soulherstyle.settings import SECRET_KEY, ACCOUNT_PAGE
 from web_app.models import User
 
 def set_access_token(response:HttpResponse, payload:dict, key:str, algro:str) -> HttpResponse:
@@ -13,11 +14,11 @@ def set_access_token(response:HttpResponse, payload:dict, key:str, algro:str) ->
     return response
 
 
-def already_authenticated(whereto:str): 
+def already_authenticated(whereto=None): 
     def inner_func(func):
-        def inner_wrap(request, *args, **kwargs):
+        def inner_wrap(request:HttpRequest, *args, **kwargs):
             if request.user.is_authenticated:
-                return redirect(whereto)
+                return redirect(whereto or ACCOUNT_PAGE)
             
             return func(request, *args, **kwargs)
         return inner_wrap
@@ -28,7 +29,7 @@ class VerifyJwtTokenMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
-    def __call__(self, request): 
+    def __call__(self, request:HttpRequest) -> HttpResponse: 
         access_token =  request.COOKIES.get('access_token', None)
         if access_token:
             try:
@@ -45,13 +46,11 @@ class JwtSetUserMiddleware:
         self.get_response = get_response
 
     
-    def __call__(self, request):
+    def __call__(self, request:HttpRequest) -> HttpResponse:
         access_token = request.COOKIES.get('access_token', None)
         if access_token: 
             current_user = User.objects.get(email=request.access_token.get('user'))
             request.user = current_user
 
         return self.get_response(request)
-
-
 
