@@ -49,7 +49,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'web_app.methods.VerifyJwtTokenMiddleware',
-    'web_app.methods.JwtSetUserMiddleware',
+    'web_app.methods.BlockJwtTokenMiddleware',
 ]
 
 ROOT_URLCONF = 'soulherstyle.urls'
@@ -130,3 +130,4 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = "web_app.User"
 
 ACCOUNT_PAGE = 'web_app-account'
+LOGIN_PAGE = 'web_app-login'

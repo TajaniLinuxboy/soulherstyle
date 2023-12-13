@@ -1,3 +1,4 @@
+<div><!--Page is bugged with some htmx issue; will fix this later -->
 <form hx-ext="response-targets" hx-post="{% url 'web_app-login-validation' %}" hx-target-404=".errors" hx-target-500=".errors" hx-target-200="#login-form" id="login-form">
     {% csrf_token %}
     <div>
@@ -10,6 +11,7 @@
             {{ form.password }}
         </div>
         <button type="submit">Submit</button>
-        <a hx-get="{% url 'web_app-register' %}" preload="mouseover" hx-push-url="true" hx-swap="outerHTML" hx-target="#login-form">Sign Up</a>
+        <a href="{% url 'web_app-register' %}">Sign Up</a> <!--htmx bug | turned into regular hrer tag-->
     </div>
 </form>
+</div>

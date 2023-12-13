@@ -7,10 +7,9 @@ from django.contrib.auth.decorators import login_required
 
 
 from web_app import forms, models
-from web_app.methods import set_access_token, already_authenticated
+from web_app.methods import set_tokens, already_authenticated
 
 from soulherstyle.settings import SECRET_KEY
-
 
 # Create your views here.
 @already_authenticated()
@@ -34,6 +33,7 @@ def login(request):
     form = forms.LoginForm()
     return render(request, 'web_app/login.html', context={'form': form}) 
 
+
 @already_authenticated()
 def login_validation(request):
     if request.method == "POST": 
@@ -48,7 +48,7 @@ def login_validation(request):
                 if password == get_user.password: #if check_password(password, get_user.password)
                     response = redirect('web_app-account')
                     payload = {'valid': True, 'user': get_user.email}
-                    return set_access_token(response, payload=payload, key=SECRET_KEY, algro='HS256')
+                    return set_tokens(response, payload=payload, key=SECRET_KEY, algor='HS256')
                 
                 else:
                     return HttpResponseNotFound("Invalid Password")
@@ -56,16 +56,19 @@ def login_validation(request):
                 return HttpResponseNotFound(str(err))
 
 
-@login_required(login_url='web_app-register')
+@login_required(login_url='web_app-login')
 def account(request): 
        response = render(request, 'web_app/account.html')
        return response
 
 
-@login_required(login_url='web_app-register')
+@login_required(login_url='web_app-login')
 def logout(request): 
     
     if request.method == "GET":
         response = redirect('web_app-register')
         response.delete_cookie('access_token')
+        response.delete_cookie('refresh_token')
         return response
+
+
